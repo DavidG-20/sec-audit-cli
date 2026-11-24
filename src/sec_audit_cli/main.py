@@ -76,6 +76,7 @@ def scan_url(
     timeout: float = typer.Option(10.0, "--timeout", help="Tiempo máximo de espera en segundos."),
     json_out: Path | None = typer.Option(None, "--json-out", help="Exporta el resultado a JSON."),
     html_out: Path | None = typer.Option(None, "--html-out", help="Exporta un reporte HTML seguro."),
+    fail_under: int = typer.Option(0, "--fail-under", min=0, max=100, help="Falla con exit 1 si el puntaje es menor a este umbral (ideal para CI/CD)."),
 ) -> None:
     """Ejecuta una auditoría defensiva sobre URL y calcula una calificación de seguridad A–F."""
     target_url = _validate_url(url)
@@ -116,6 +117,12 @@ def scan_url(
     if html_out:
         export_html(report, html_out)
         console.print(f"[dim]Reporte HTML guardado en {html_out}[/dim]")
+
+    if report.score < fail_under:
+        console.print(
+            f"[red]Puntaje ({report.score}) inferior al umbral requerido ({fail_under}).[/red]"
+        )
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

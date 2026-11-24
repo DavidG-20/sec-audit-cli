@@ -219,7 +219,9 @@ def analyze_tls(tls_info: TLSInfo | None, is_https: bool) -> list[SecurityFindin
             )
         ]
 
-    if tls_info.days_remaining <= 0:
+    if tls_info.protocol in {"SSLv2", "SSLv3", "TLSv1", "TLSv1.1"}:
+        status_val, detail = "fail", f"Protocolo TLS obsoleto e inseguro ({tls_info.protocol})."
+    elif tls_info.days_remaining <= 0:
         status_val, detail = "fail", f"Certificado vencido ({tls_info.expires_at})."
     elif tls_info.days_remaining <= 30:
         status_val, detail = "warn", f"Vence pronto ({tls_info.days_remaining} días, {tls_info.expires_at})."

@@ -98,3 +98,17 @@ def test_html_report_escapes_malicious_headers_and_json_exports(tmp_path: Path) 
     parsed = json.loads(json_file.read_text(encoding="utf-8"))
     assert parsed["grade"] == grade
     assert parsed["score"] == score
+
+
+def test_obsolete_tls_protocol_fails_check() -> None:
+    tls = TLSInfo(
+        protocol="TLSv1.1",
+        issuer="Test CA",
+        subject="example.com",
+        expires_at="2027-06-01",
+        days_remaining=180,
+        valid=True,
+    )
+    findings = analyze_tls(tls, is_https=True)
+    assert findings[0].status == "fail"
+    assert "obsoleto" in findings[0].detail.lower()
