@@ -1,0 +1,26 @@
+[project]
+name = "sec-audit-cli"
+version = "0.1.0"
+description = "Auditor CLI defensivo de cabeceras HTTP, cookies y certificados TLS/SSL con calificación A–F."
+readme = "README.md"
+authors = [
+    { name = "David Garcia Garcia", email = "davidgarcia20.academico@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "rich>=15.0.0",
+    "typer>=0.29.2",
+]
+
+[project.scripts]
+secaudit = "sec_audit_cli.main:app"
+
+[build-system]
+requires = ["uv_build>=0.13.9,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
