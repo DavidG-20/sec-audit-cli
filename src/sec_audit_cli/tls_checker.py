@@ -44,9 +44,20 @@ def inspect_tls(url: str, timeout: float = 10.0) -> TLSInfo | None:
         )
 
     not_after_str = str(cert.get("notAfter", ""))
-    expires_dt = datetime.strptime(not_after_str, "%b %d %H:%M:%S %Y %Z").replace(
-        tzinfo=timezone.utc
-    )
+    try:
+        expires_dt = datetime.strptime(not_after_str, "%b %d %H:%M:%S %Y %Z").replace(
+            tzinfo=timezone.utc
+        )
+    except ValueError as exc:
+        return TLSInfo(
+            protocol=protocol,
+            issuer="N/A",
+            subject="N/A",
+            expires_at="N/A",
+            days_remaining=0,
+            valid=False,
+            error=f"Certificado sin fecha de expiración válida: {exc}",
+        )
     days_remaining = (expires_dt - datetime.now(timezone.utc)).days
 
     return TLSInfo(
